@@ -267,15 +267,15 @@ void c_yandex_oauth_get_token(
 
 		CURLcode res = curl_easy_perform(curl);
 
-		const char *error = curl_easy_strerror(res);
-		curl_easy_cleanup(curl);
-		curl_slist_free_all(header);
-	
 		if (res) { //handle erros
-			callback(user_data, NULL, 0, NULL, error);
+			callback(user_data, NULL, 0, NULL, curl_easy_strerror(res));
 			free(s.ptr);
+			curl_easy_cleanup(curl);
+			curl_slist_free_all(header);
 			return;			
 		}			
+		curl_easy_cleanup(curl);
+		curl_slist_free_all(header);
 
 		//parse JSON answer
 		cJSON *json = cJSON_ParseWithLength(s.ptr, s.len);
@@ -475,15 +475,17 @@ void c_yandex_oauth_on_page(
 
 	CURLcode res = curl_easy_perform(curl);
 	
-	const char *error = curl_easy_strerror(res);
+	if (res) { //handle erros
+		callback(user_data, NULL, NULL, NULL, 0, 0, 
+				curl_easy_strerror(res));
+		free(s.ptr);
+		curl_easy_cleanup(curl);
+		curl_slist_free_all(header);
+		return;			
+	}		
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(header);
 	
-	if (res) { //handle erros
-		callback(user_data, NULL, NULL, NULL, 0, 0, error);
-		free(s.ptr);
-		return;			
-	}		
 	//parse JSON answer
 	cJSON *json = cJSON_ParseWithLength(s.ptr, s.len);
 	free(s.ptr);
@@ -599,15 +601,16 @@ void c_yandex_oauth_ask_token_in_interval(
 		
 		CURLcode res = curl_easy_perform(curl);
 
-		const char *error = curl_easy_strerror(res);
+		if (res) { //handle erros
+			callback(user_data, NULL, 0, NULL, curl_easy_strerror(res));
+			free(s.ptr);
+			curl_easy_cleanup(curl);
+			curl_slist_free_all(header);
+			continue;			
+		}			
 		curl_easy_cleanup(curl);
 		curl_slist_free_all(header);
 	
-		if (res) { //handle erros
-			callback(user_data, NULL, 0, NULL, error);
-			free(s.ptr);
-			continue;			
-		}			
 		//parse JSON answer
 		cJSON *json = cJSON_ParseWithLength(s.ptr, s.len);
 		free(s.ptr);
