@@ -1,13 +1,13 @@
 #config to create cYandexDisk lib with automake
 ACLOCAL_AMFLAGS = -I m4
 
-lib_LTLIBRARIES  = libcYandexMusic.la
-libcYandexMusic_la_SOURCES = \
-		cYandexMusic.c\
-	  cJSON.c\
-	  uuid4.c
+lib_LTLIBRARIES  = libcYandexOAuth.la
+libcYandexOAuth_la_SOURCES = \
+		cYandexOAuth.h cYandexOAuth.c\
+	  cJSON.h cJSON.c\
+	  uuid4.h uuid4.c
 
-libcYandexMusic_la_CFLAGS = -fPIC
+libcYandexOAuth_la_CFLAGS = -fPIC
 
 if WIN32
 AM_CFLAGS = \
@@ -22,10 +22,9 @@ CURL_LINK = -lcurl -L`pwd`/curl/windows/win64/bin/libcurl.dll
 endif
 
 if WINDOWS
-libcYandexMusic_la_SOURCES += strptime.cc
-libcYandexMusic_la_LDFLAGS = -Wl,-no-undefined
+libcYandexOAuth_la_LDFLAGS = -Wl,-no-undefined
 else
 CURL_LINK = -lcurl
 endif
 
-libcYandexMusic_la_LIBADD = $(CURL_LINK)
+libcYandexOAuth_la_LIBADD = $(CURL_LINK)
